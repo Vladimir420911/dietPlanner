@@ -9,6 +9,7 @@ public class UserProfile
     public double Weight { get; set; } = 70;
     public double Height { get; set; } = 170;
 
+    public string Password { get; set; } = string.Empty;
     // Числовой коэффициент активности (хранится в БД)
     public double ActivityFactor { get; set; } = 1.55; // Moderate по умолчанию
 

@@ -9,39 +9,38 @@ namespace testMaui.ViewModels
     public partial class DiaryViewModel : BaseViewModel
     {
         private readonly int _userId = AppState.CurrentUserId;
+        private List<Meal> _allMeals = new(); // все приёмы за день
 
         [ObservableProperty]
         private DateTime selectedDate = DateTime.Today;
 
         [ObservableProperty]
-        private ObservableCollection<Meal> meals;
-
-        [ObservableProperty]
-        private double totalCalories;
-
-        [ObservableProperty]
-        private double totalProteins;
-
-        [ObservableProperty]
-        private double totalFats;
-
-        [ObservableProperty]
-        private double totalCarbs;
-
-        [ObservableProperty]
-        private double dailyNormCalories;
-
-        [ObservableProperty]
-        private double dailyNormProteins;
-
-        [ObservableProperty]
-        private double dailyNormFats;
-
-        [ObservableProperty]
-        private double dailyNormCarbs;
-
-        [ObservableProperty]
         private string selectedMealType = "Завтрак";
+
+        [ObservableProperty]
+        private ObservableCollection<MealItem> currentItems; // для отображения
+
+        // Общие итоги за день
+        [ObservableProperty]
+        private double totalCalories, totalProteins, totalFats, totalCarbs;
+
+        // Нормы
+        [ObservableProperty]
+        private double dailyNormCalories, dailyNormProteins, dailyNormFats, dailyNormCarbs;
+
+        // Вычисляемые остатки
+        public double RemainingCalories => DailyNormCalories - TotalCalories;
+        public double RemainingProteins => DailyNormProteins - TotalProteins;
+        public double RemainingFats => DailyNormFats - TotalFats;
+        public double RemainingCarbs => DailyNormCarbs - TotalCarbs;
+
+        // Прогресс-бары
+        public double CaloriesProgress => DailyNormCalories > 0 ? TotalCalories / DailyNormCalories : 0;
+        public double ProteinsProgress => DailyNormProteins > 0 ? TotalProteins / DailyNormProteins : 0;
+        public double FatsProgress => DailyNormFats > 0 ? TotalFats / DailyNormFats : 0;
+        public double CarbsProgress => DailyNormCarbs > 0 ? TotalCarbs / DailyNormCarbs : 0;
+
+        public ObservableCollection<Product> Products { get; } = new();
 
         [ObservableProperty]
         private Product selectedProductForAdd;
@@ -49,36 +48,33 @@ namespace testMaui.ViewModels
         [ObservableProperty]
         private string quantityGrams;
 
-        public ObservableCollection<Product> Products { get; }
-
         public DiaryViewModel()
         {
-            Products = new ObservableCollection<Product>(Database.GetAllProducts());
-            LoadMeals();
+            LoadProducts();
             LoadNorms();
+            LoadAllMeals();
+            FilterCurrentItems();
         }
 
         partial void OnSelectedDateChanged(DateTime value)
         {
-            LoadMeals();
+            LoadAllMeals();
+            FilterCurrentItems();
         }
 
-        private void LoadMeals()
+        partial void OnSelectedMealTypeChanged(string value)
         {
-            var mealsList = Database.GetMealsForDate(SelectedDate, _userId);
-            Meals = new ObservableCollection<Meal>(mealsList);
-            CalculateTotals();
+            FilterCurrentItems();
         }
 
-        private void CalculateTotals()
+        private void LoadProducts()
         {
-            TotalCalories = Meals.Sum(m => m.TotalCalories);
-            TotalProteins = Meals.Sum(m => m.TotalProteins);
-            TotalFats = Meals.Sum(m => m.TotalFats);
-            TotalCarbs = Meals.Sum(m => m.TotalCarbs);
+            var prods = Database.GetAllProducts();
+            Products.Clear();
+            foreach (var p in prods) Products.Add(p);
         }
 
-        private void LoadNorms()
+        public void LoadNorms()
         {
             var user = AppState.CurrentUser;
             if (user == null) return;
@@ -88,24 +84,52 @@ namespace testMaui.ViewModels
             DailyNormCarbs = user.DailyCarbNorm;
         }
 
+        public void LoadAllMeals()
+        {
+            _allMeals = Database.GetMealsForDate(SelectedDate, _userId);
+            CalculateTotals();
+            FilterCurrentItems();
+        }
+
+        private void CalculateTotals()
+        {
+            TotalCalories = _allMeals.Sum(m => m.TotalCalories);
+            TotalProteins = _allMeals.Sum(m => m.TotalProteins);
+            TotalFats = _allMeals.Sum(m => m.TotalFats);
+            TotalCarbs = _allMeals.Sum(m => m.TotalCarbs);
+            // Уведомляем об изменениях вычисляемых свойств
+            OnPropertyChanged(nameof(RemainingCalories));
+            OnPropertyChanged(nameof(RemainingProteins));
+            OnPropertyChanged(nameof(RemainingFats));
+            OnPropertyChanged(nameof(RemainingCarbs));
+            OnPropertyChanged(nameof(CaloriesProgress));
+            OnPropertyChanged(nameof(ProteinsProgress));
+            OnPropertyChanged(nameof(FatsProgress));
+            OnPropertyChanged(nameof(CarbsProgress));
+        }
+
+        private void FilterCurrentItems()
+        {
+            var items = _allMeals.Where(m => m.Type == SelectedMealType)
+                                 .SelectMany(m => m.Items)
+                                 .ToList();
+            CurrentItems = new ObservableCollection<MealItem>(items);
+        }
+
         [RelayCommand]
         private void AddMealItem()
         {
             if (SelectedProductForAdd == null) return;
             if (!double.TryParse(QuantityGrams, out double grams) || grams <= 0) return;
 
-            var meal = Meals.FirstOrDefault(m => m.Type == SelectedMealType);
+            var meal = _allMeals.FirstOrDefault(m => m.Type == SelectedMealType);
             if (meal == null)
             {
-                meal = new Meal
-                {
-                    DateTime = SelectedDate,
-                    Type = SelectedMealType
-                };
+                meal = new Meal { DateTime = SelectedDate, Type = SelectedMealType };
                 int newMealId = Database.AddMeal(meal, _userId);
                 meal.Id = newMealId;
                 meal.Items = new List<MealItem>();
-                Meals.Add(meal);
+                _allMeals.Add(meal);
             }
 
             var item = new MealItem
@@ -116,17 +140,46 @@ namespace testMaui.ViewModels
             int newItemId = Database.AddMealItem(item, meal.Id);
             item.Id = newItemId;
             meal.Items.Add(item);
+
+            FilterCurrentItems();
             CalculateTotals();
             QuantityGrams = string.Empty;
         }
 
         [RelayCommand]
-        private void DeleteMeal(Meal meal)
+        private void DeleteMealItem(MealItem item)
         {
-            if (meal == null) return;
-            Database.DeleteMeal(meal.Id);
-            Meals.Remove(meal);
+            if (item == null) return;
+            Database.DeleteMealItem(item.Id);
+
+            var meal = _allMeals.FirstOrDefault(m => m.Items.Contains(item));
+            meal?.Items.Remove(item);
+            if (meal != null && !meal.Items.Any())
+            {
+                Database.DeleteMeal(meal.Id);
+                _allMeals.Remove(meal);
+            }
+
+            FilterCurrentItems();
             CalculateTotals();
+        }
+
+        [RelayCommand]
+        private void AddMealOfType()
+        {
+            if (_allMeals.Any(m => m.Type == SelectedMealType)) return;
+            var meal = new Meal { DateTime = SelectedDate, Type = SelectedMealType };
+            int newMealId = Database.AddMeal(meal, _userId);
+            meal.Id = newMealId;
+            meal.Items = new List<MealItem>();
+            _allMeals.Add(meal);
+            FilterCurrentItems();
+        }
+
+        [RelayCommand]
+        private void SelectMealType(string type)
+        {
+            SelectedMealType = type;
         }
     }
 }

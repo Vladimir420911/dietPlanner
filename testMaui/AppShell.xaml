@@ -6,9 +6,21 @@
        Shell.FlyoutBehavior="Disabled">
 
     <TabBar>
-        <ShellContent Title="Дневник" Icon="calendar.png" Route="diary" ContentTemplate="{DataTemplate views:DiaryPage}" />
-        <ShellContent Title="Продукты" Icon="food.png" Route="products" ContentTemplate="{DataTemplate views:ProductsPage}" />
-        <ShellContent Title="Профиль" Icon="user.png" Route="profile" ContentTemplate="{DataTemplate views:ProfilePage}" />
-        <ShellContent Title="Отчёты" Icon="chart.png" Route="reports" ContentTemplate="{DataTemplate views:ReportsPage}" />
+        <ShellContent Title="Дневник" 
+                      Icon="calendar.png" 
+                      Route="DiaryPage" 
+                      ContentTemplate="{DataTemplate views:DiaryPage}" />
+        <ShellContent Title="Продукты" 
+                      Icon="food.png" 
+                      Route="ProductsPage" 
+                      ContentTemplate="{DataTemplate views:ProductsPage}" />
+        <ShellContent Title="Профиль" 
+                      Icon="user.png" 
+                      Route="ProfilePage" 
+                      ContentTemplate="{DataTemplate views:ProfilePage}" />
+        <ShellContent Title="Отчёты" 
+                      Icon="chart.png" 
+                      Route="ReportsPage" 
+                      ContentTemplate="{DataTemplate views:ReportsPage}" />
     </TabBar>
 </Shell>

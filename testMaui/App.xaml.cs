@@ -27,13 +27,9 @@ namespace testMaui
                     System.Diagnostics.Debug.WriteLine($"Ошибка загрузки пользователя: {ex.Message}");
                 }
             }
-
+            
             MainPage = new NavigationPage(new LoginPage());
+            
         }
-
-        //protected override Window CreateWindow(IActivationState? activationState)
-        //{
-        //    return new Window(new AppShell());
-        //}
     }
 }

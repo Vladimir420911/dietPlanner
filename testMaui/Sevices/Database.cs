@@ -367,13 +367,13 @@ namespace testMaui.Sevices
             cmd.ExecuteNonQuery();
         }
 
-        public static int CreateUser(UserProfile user)
+        public static int CreateUser(UserProfile user, string password)
         {
             using var conn = new MySqlConnection(connectionString);
             conn.Open();
             var cmd = new MySqlCommand(@"
-        INSERT INTO users (name, age, gender, weight, height, activity_level, goal)
-        VALUES (@name, @age, @gender, @weight, @height, @activity, @goal);
+        INSERT INTO users (name, age, gender, weight, height, activity_level, goal, password)
+        VALUES (@name, @age, @gender, @weight, @height, @activity, @goal, @password);
         SELECT LAST_INSERT_ID();", conn);
             cmd.Parameters.AddWithValue("@name", user.Name);
             cmd.Parameters.AddWithValue("@age", user.Age);
@@ -382,10 +382,93 @@ namespace testMaui.Sevices
             cmd.Parameters.AddWithValue("@height", user.Height);
             cmd.Parameters.AddWithValue("@activity", user.ActivityFactor);
             cmd.Parameters.AddWithValue("@goal", user.Goal.ToString());
+            cmd.Parameters.AddWithValue("@password", password);
             int newId = Convert.ToInt32(cmd.ExecuteScalar());
             user.Id = newId;
-            RecalculateUserNorm(user); // расчёт и сохранение норм
+            RecalculateUserNorm(user);
             return newId;
+        }
+
+        public static void UpdateUserWithPassword(UserProfile user)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+            var cmd = new MySqlCommand(@"
+        UPDATE users SET
+            name = @name,
+            age = @age,
+            gender = @gender,
+            weight = @weight,
+            height = @height,
+            activity_level = @activity,
+            goal = @goal,
+            password = @password
+        WHERE id = @id", conn);
+            cmd.Parameters.AddWithValue("@id", user.Id);
+            cmd.Parameters.AddWithValue("@name", user.Name);
+            cmd.Parameters.AddWithValue("@age", user.Age);
+            cmd.Parameters.AddWithValue("@gender", user.Gender);
+            cmd.Parameters.AddWithValue("@weight", user.Weight);
+            cmd.Parameters.AddWithValue("@height", user.Height);
+            cmd.Parameters.AddWithValue("@activity", user.ActivityFactor);
+            cmd.Parameters.AddWithValue("@goal", user.Goal.ToString());
+            cmd.Parameters.AddWithValue("@password", user.Password);
+            cmd.ExecuteNonQuery();
+
+            // Пересчёт норм
+            RecalculateUserNorm(user);
+        }
+
+        public static UserProfile? Authenticate(string name, string password)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+            var cmd = new MySqlCommand(@"
+        SELECT id, name, age, gender, weight, height, activity_level, goal
+        FROM users WHERE name = @name AND password = @password", conn);
+            cmd.Parameters.AddWithValue("@name", name);
+            cmd.Parameters.AddWithValue("@password", password);
+            using var reader = cmd.ExecuteReader();
+            if (!reader.Read()) return null;
+
+            var user = new UserProfile
+            {
+                Id = reader.GetInt32("id"),
+                Name = reader.GetString("name"),
+                Age = reader.GetInt32("age"),
+                Gender = reader.GetString("gender"),
+                Weight = reader.GetDouble("weight"),
+                Height = reader.GetDouble("height"),
+                ActivityFactor = reader.GetDouble("activity_level"),
+                Goal = Enum.Parse<GoalType>(reader.GetString("goal"))
+            };
+            reader.Close();
+
+            // Загружаем нормы
+            var cmdNorms = new MySqlCommand("SELECT daily_calories, protein_goal, fat_goal, carbs_goal FROM user_norms WHERE user_id=@id", conn);
+            cmdNorms.Parameters.AddWithValue("@id", user.Id);
+            using var readerNorms = cmdNorms.ExecuteReader();
+            if (readerNorms.Read())
+            {
+                user.DailyCalorieNorm = readerNorms.GetDouble("daily_calories");
+                user.DailyProteinNorm = readerNorms.GetDouble("protein_goal");
+                user.DailyFatNorm = readerNorms.GetDouble("fat_goal");
+                user.DailyCarbNorm = readerNorms.GetDouble("carbs_goal");
+            }
+            else
+            {
+                RecalculateUserNorm(user); // на случай отсутствия норм
+            }
+            return user;
+        }
+
+        public static void DeleteMealItem(int mealItemId)
+        {
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+            var cmd = new MySqlCommand("DELETE FROM meal_items WHERE id=@id", conn);
+            cmd.Parameters.AddWithValue("@id", mealItemId);
+            cmd.ExecuteNonQuery();
         }
     }
 }

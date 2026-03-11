@@ -1,3 +1,5 @@
+using testMaui.ViewModels;
+
 namespace testMaui.Views;
 
 public partial class DiaryPage : ContentPage
@@ -6,4 +8,10 @@ public partial class DiaryPage : ContentPage
 	{
 		InitializeComponent();
 	}
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        (BindingContext as DiaryViewModel)?.LoadAllMeals();
+    }
 }

@@ -41,6 +41,7 @@
                     </x:Array>
                 </Picker.ItemsSource>
             </Picker>
+            <Entry Placeholder="Пароль" Text="{Binding Password}" IsPassword="True" />
             <Button Text="Сохранить профиль" Command="{Binding SaveProfileCommand}" />
             <Button Text="Выйти" Command="{Binding LogoutCommand}" BackgroundColor="Gray" Margin="0,20,0,0" />
             <Label Text="Рассчитанные нормы:" FontAttributes="Bold" Margin="0,20,0,0"/>

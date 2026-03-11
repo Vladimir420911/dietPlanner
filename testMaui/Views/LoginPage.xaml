@@ -3,44 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:testMaui.ViewModels"
              x:Class="testMaui.Views.LoginPage"
-             Title="Регистрация">
+             Title="Вход">
     <ContentPage.BindingContext>
         <viewmodels:LoginViewModel />
     </ContentPage.BindingContext>
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="10">
-            <Entry Placeholder="Имя" Text="{Binding UserName}" />
-            <Entry Placeholder="Возраст" Text="{Binding Age}" Keyboard="Numeric" />
-            <Picker Title="Пол" SelectedItem="{Binding Gender}">
-                <Picker.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                        <x:String>Male</x:String>
-                        <x:String>Female</x:String>
-                    </x:Array>
-                </Picker.ItemsSource>
-            </Picker>
-            <Entry Placeholder="Вес (кг)" Text="{Binding Weight}" Keyboard="Numeric" />
-            <Entry Placeholder="Рост (см)" Text="{Binding Height}" Keyboard="Numeric" />
-            <Picker Title="Активность" SelectedItem="{Binding ActivityLevel}">
-                <Picker.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                        <x:String>Low</x:String>
-                        <x:String>Moderate</x:String>
-                        <x:String>High</x:String>
-                    </x:Array>
-                </Picker.ItemsSource>
-            </Picker>
-            <Picker Title="Цель" SelectedItem="{Binding Goal}">
-                <Picker.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                        <x:String>Lose</x:String>
-                        <x:String>Maintain</x:String>
-                        <x:String>Gain</x:String>
-                    </x:Array>
-                </Picker.ItemsSource>
-            </Picker>
-            <Button Text="Создать профиль и войти" Command="{Binding CreateProfileCommand}" />
-        </VerticalStackLayout>
-    </ScrollView>
+    <!-- ВОТ СЮДА ВСТАВЛЯЕТСЯ ПРЕДОСТАВЛЕННЫЙ КОД -->
+    <VerticalStackLayout Padding="20" Spacing="15">
+        <Entry Placeholder="Имя пользователя" Text="{Binding UserName}" />
+        <Entry Placeholder="Пароль" Text="{Binding Password}" IsPassword="True" />
+        <Button Text="Войти" Command="{Binding LoginCommand}" />
+        <Button Text="Создать новый аккаунт" Command="{Binding GoToRegisterCommand}" 
+                BackgroundColor="Gray" TextColor="White"/>
+    </VerticalStackLayout>
 </ContentPage>

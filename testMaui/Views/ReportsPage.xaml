@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:testMaui.ViewModels"
+             x:Class="testMaui.Views.ReportsPage"
+             Title="Отчёты">
+    <ContentPage.BindingContext>
+        <viewmodels:ReportsViewModel />
+    </ContentPage.BindingContext>
+
+    <VerticalStackLayout Padding="20" Spacing="10">
+        <Label Text="Выберите период:" />
+        <HorizontalStackLayout Spacing="10">
+            <DatePicker Date="{Binding StartDate}" />
+            <DatePicker Date="{Binding EndDate}" />
+        </HorizontalStackLayout>
+        <Button Text="Сформировать отчёт" Clicked="OnGenerateReport" />
+
+        <Label Text="{Binding TotalCalories, StringFormat='Всего калорий: {0:F0}'}" />
+        <Label Text="{Binding AverageCalories, StringFormat='Среднесуточное: {0:F0}'}" />
+    </VerticalStackLayout>
+</ContentPage>

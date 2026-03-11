@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell x:Class="testMaui.AppShell"
+       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:testMaui.Views"
+       Shell.FlyoutBehavior="Disabled">
+
+    <TabBar>
+        <ShellContent Title="Дневник" Icon="calendar.png" Route="diary" ContentTemplate="{DataTemplate views:DiaryPage}" />
+        <ShellContent Title="Продукты" Icon="food.png" Route="products" ContentTemplate="{DataTemplate views:ProductsPage}" />
+        <ShellContent Title="Профиль" Icon="user.png" Route="profile" ContentTemplate="{DataTemplate views:ProfilePage}" />
+        <ShellContent Title="Отчёты" Icon="chart.png" Route="reports" ContentTemplate="{DataTemplate views:ReportsPage}" />
+    </TabBar>
+</Shell>

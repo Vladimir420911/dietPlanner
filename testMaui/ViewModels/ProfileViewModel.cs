@@ -45,6 +45,8 @@ namespace testMaui.ViewModels
         [ObservableProperty]
         private double dailyCarbNorm;
 
+        public double CaloriesProgress => DailyCalorieNorm > 0 ? DailyCalorieNorm / (AppState.CurrentUser?.DailyCalorieNorm ?? 1) : 0;
+
         // Флаг: true, если создаётся новый пользователь
         private bool IsNewUser => AppState.CurrentUser == null;
 

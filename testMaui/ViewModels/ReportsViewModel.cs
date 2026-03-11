@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using testMaui.Sevices;
+using CommunityToolkit.Mvvm.Input;
 using System.Linq;
+using testMaui.Sevices;
 
 namespace testMaui.ViewModels
 {
@@ -20,6 +21,7 @@ namespace testMaui.ViewModels
         [ObservableProperty]
         private double totalCalories;
 
+        [RelayCommand]
         public void GenerateReport()
         {
             var meals = Database.GetMealsInRange(_userId, StartDate, EndDate);

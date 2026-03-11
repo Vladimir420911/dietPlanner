@@ -3,52 +3,91 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:testMaui.ViewModels"
              x:Class="testMaui.Views.ProfilePage"
-             Title="Профиль">
+             Title="Профиль"
+             BackgroundColor="#F5F5F5">
     <ContentPage.BindingContext>
         <viewmodels:ProfileViewModel />
     </ContentPage.BindingContext>
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="10">
-            <Entry Placeholder="Имя" Text="{Binding UserName}" />
-            <Entry Placeholder="Возраст" Text="{Binding Age}" Keyboard="Numeric" />
-            <Picker Title="Пол" SelectedItem="{Binding Gender}">
-                <Picker.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                        <x:String>Male</x:String>
-                        <x:String>Female</x:String>
-                    </x:Array>
-                </Picker.ItemsSource>
-            </Picker>
-            <Entry Placeholder="Вес (кг)" Text="{Binding Weight}" Keyboard="Numeric" />
-            <Entry Placeholder="Рост (см)" Text="{Binding Height}" Keyboard="Numeric" />
-            <Picker Title="Активность" SelectedItem="{Binding ActivityLevel}">
-                <Picker.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                        <x:String>Low</x:String>
-                        <x:String>Moderate</x:String>
-                        <x:String>High</x:String>
-                    </x:Array>
-                </Picker.ItemsSource>
-            </Picker>
-            <!-- Новый Picker для цели -->
-            <Picker Title="Цель" SelectedItem="{Binding Goal}">
-                <Picker.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                        <x:String>Lose</x:String>
-                        <x:String>Maintain</x:String>
-                        <x:String>Gain</x:String>
-                    </x:Array>
-                </Picker.ItemsSource>
-            </Picker>
-            <Entry Placeholder="Пароль" Text="{Binding Password}" IsPassword="True" />
-            <Button Text="Сохранить профиль" Command="{Binding SaveProfileCommand}" />
-            <Button Text="Выйти" Command="{Binding LogoutCommand}" BackgroundColor="Gray" Margin="0,20,0,0" />
-            <Label Text="Рассчитанные нормы:" FontAttributes="Bold" Margin="0,20,0,0"/>
-            <Label Text="{Binding DailyCalorieNorm, StringFormat='Калории: {0:F0} ккал'}" />
-            <Label Text="{Binding DailyProteinNorm, StringFormat='Белки: {0:F1} г'}" />
-            <Label Text="{Binding DailyFatNorm, StringFormat='Жиры: {0:F1} г'}" />
-            <Label Text="{Binding DailyCarbNorm, StringFormat='Углеводы: {0:F1} г'}" />
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <!-- Данные пользователя в карточке -->
+            <Frame Padding="15" BackgroundColor="White" CornerRadius="10" HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Entry Placeholder="Имя" Text="{Binding UserName}" BackgroundColor="#F5F5F5" />
+                    <Entry Placeholder="Возраст" Text="{Binding Age}" Keyboard="Numeric" BackgroundColor="#F5F5F5" />
+                    <Picker Title="Пол" SelectedItem="{Binding Gender}" BackgroundColor="#F5F5F5">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Male</x:String>
+                                <x:String>Female</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                    <Entry Placeholder="Вес (кг)" Text="{Binding Weight}" Keyboard="Numeric" BackgroundColor="#F5F5F5" />
+                    <Entry Placeholder="Рост (см)" Text="{Binding Height}" Keyboard="Numeric" BackgroundColor="#F5F5F5" />
+                    <Picker Title="Активность" SelectedItem="{Binding ActivityLevel}" BackgroundColor="#F5F5F5">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Low</x:String>
+                                <x:String>Moderate</x:String>
+                                <x:String>High</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                    <Picker Title="Цель" SelectedItem="{Binding Goal}" BackgroundColor="#F5F5F5">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Lose</x:String>
+                                <x:String>Maintain</x:String>
+                                <x:String>Gain</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                    <Entry Placeholder="Пароль" Text="{Binding Password}" IsPassword="True" BackgroundColor="#F5F5F5" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Рассчитанные нормы в отдельной карточке с прогресс-барами (как на DiaryPage) -->
+            <Frame Padding="15" BackgroundColor="White" CornerRadius="10" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Ваши нормы" FontAttributes="Bold" FontSize="16" Margin="0,0,0,5"/>
+
+                    <!-- Калории -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Калории" FontSize="14" />
+                        <Label Grid.Column="1" Text="{Binding DailyCalorieNorm, StringFormat='{0:F0} ккал'}" FontSize="14" TextColor="#4CAF50"/>
+                    </Grid>
+                    <Label Text="{Binding DailyCalorieNorm, StringFormat='Калории: {0:F0} ккал'}" FontSize="14"/>
+
+                    <!-- Белки -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Белки" FontSize="14" />
+                        <Label Grid.Column="1" Text="{Binding DailyProteinNorm, StringFormat='{0:F1} г'}" FontSize="14" TextColor="#2196F3"/>
+                    </Grid>
+                    <Label Text="{Binding DailyProteinNorm, StringFormat='Белки: {0:F1} г'}" FontSize="14"/>
+
+                    <!-- Жиры -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Жиры" FontSize="14" />
+                        <Label Grid.Column="1" Text="{Binding DailyFatNorm, StringFormat='{0:F1} г'}" FontSize="14" TextColor="#FF9800"/>
+                    </Grid>
+                    <Label Text="{Binding DailyFatNorm, StringFormat='Жиры: {0:F1} г'}" FontSize="14"/>
+
+                    <!-- Углеводы -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Углеводы" FontSize="14" />
+                        <Label Grid.Column="1" Text="{Binding DailyCarbNorm, StringFormat='{0:F1} г'}" FontSize="14" TextColor="#9C27B0"/>
+                    </Grid>
+                    <Label Text="{Binding DailyCarbNorm, StringFormat='Углеводы: {0:F1} г'}" FontSize="14"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Кнопки -->
+            <Button Text="Сохранить профиль" Command="{Binding SaveProfileCommand}"
+                    BackgroundColor="#4CAF50" TextColor="White" CornerRadius="20" HeightRequest="50"/>
+            <Button Text="Выйти" Command="{Binding LogoutCommand}"
+                    BackgroundColor="#F44336" TextColor="White" CornerRadius="20" HeightRequest="50"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

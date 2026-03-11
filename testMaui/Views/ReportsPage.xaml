@@ -3,20 +3,33 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:testMaui.ViewModels"
              x:Class="testMaui.Views.ReportsPage"
-             Title="Отчёты">
+             Title="Отчёты"
+             BackgroundColor="#F5F5F5">
     <ContentPage.BindingContext>
         <viewmodels:ReportsViewModel />
     </ContentPage.BindingContext>
 
-    <VerticalStackLayout Padding="20" Spacing="10">
-        <Label Text="Выберите период:" />
-        <HorizontalStackLayout Spacing="10">
-            <DatePicker Date="{Binding StartDate}" />
-            <DatePicker Date="{Binding EndDate}" />
-        </HorizontalStackLayout>
-        <Button Text="Сформировать отчёт" Clicked="OnGenerateReport" />
+    <VerticalStackLayout Padding="20" Spacing="15">
+        <!-- Карточка выбора периода -->
+        <Frame Padding="15" BackgroundColor="White" CornerRadius="10" HasShadow="True">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Выберите период" FontAttributes="Bold" FontSize="16"/>
+                <HorizontalStackLayout Spacing="10">
+                    <DatePicker Date="{Binding StartDate}" BackgroundColor="#F5F5F5" HorizontalOptions="FillAndExpand"/>
+                    <DatePicker Date="{Binding EndDate}" BackgroundColor="#F5F5F5" HorizontalOptions="FillAndExpand"/>
+                </HorizontalStackLayout>
+                <Button Text="Сформировать отчёт" Command="{Binding GenerateReportCommand}"
+                        BackgroundColor="#4CAF50" TextColor="White" CornerRadius="20" HeightRequest="50"/>
+            </VerticalStackLayout>
+        </Frame>
 
-        <Label Text="{Binding TotalCalories, StringFormat='Всего калорий: {0:F0}'}" />
-        <Label Text="{Binding AverageCalories, StringFormat='Среднесуточное: {0:F0}'}" />
+        <!-- Карточка результатов -->
+        <Frame Padding="15" BackgroundColor="White" CornerRadius="10" HasShadow="True">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Результаты" FontAttributes="Bold" FontSize="16"/>
+                <Label Text="{Binding TotalCalories, StringFormat='Всего калорий: {0:F0}'}" FontSize="14"/>
+                <Label Text="{Binding AverageCalories, StringFormat='Среднесуточное: {0:F0}'}" FontSize="14"/>
+            </VerticalStackLayout>
+        </Frame>
     </VerticalStackLayout>
 </ContentPage>

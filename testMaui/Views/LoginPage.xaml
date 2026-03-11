@@ -3,17 +3,52 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:testMaui.ViewModels"
              x:Class="testMaui.Views.LoginPage"
-             Title="Вход">
+             Title="Вход"
+             BackgroundColor="#F5F5F5">
     <ContentPage.BindingContext>
         <viewmodels:LoginViewModel />
     </ContentPage.BindingContext>
 
-    <!-- ВОТ СЮДА ВСТАВЛЯЕТСЯ ПРЕДОСТАВЛЕННЫЙ КОД -->
-    <VerticalStackLayout Padding="20" Spacing="15">
-        <Entry Placeholder="Имя пользователя" Text="{Binding UserName}" />
-        <Entry Placeholder="Пароль" Text="{Binding Password}" IsPassword="True" />
-        <Button Text="Войти" Command="{Binding LoginCommand}" />
-        <Button Text="Создать новый аккаунт" Command="{Binding GoToRegisterCommand}" 
-                BackgroundColor="Gray" TextColor="White"/>
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <!-- Карточка входа -->
+            <Frame BackgroundColor="White"
+                   CornerRadius="10"
+                   Padding="20"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Вход в приложение"
+                           FontAttributes="Bold"
+                           FontSize="18"
+                           HorizontalOptions="Center"/>
+
+                    <Entry Placeholder="Имя пользователя"
+                           Text="{Binding UserName}"
+                           BackgroundColor="#F5F5F5"
+                           HeightRequest="50" />
+
+                    <Entry Placeholder="Пароль"
+                           Text="{Binding Password}"
+                           IsPassword="True"
+                           BackgroundColor="#F5F5F5"
+                           HeightRequest="50" />
+
+                    <Button Text="Войти"
+                            Command="{Binding LoginCommand}"
+                            BackgroundColor="#4CAF50"
+                            TextColor="White"
+                            CornerRadius="20"
+                            HeightRequest="50" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Кнопка перехода к регистрации -->
+            <Button Text="Создать новый аккаунт"
+                    Command="{Binding GoToRegisterCommand}"
+                    BackgroundColor="#BDBDBD"
+                    TextColor="White"
+                    CornerRadius="20"
+                    HeightRequest="50" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

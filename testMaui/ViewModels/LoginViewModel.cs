@@ -48,8 +48,8 @@ namespace testMaui.ViewModels
         private async Task GoToRegister()
         {
             // Переходим на ProfilePage для регистрации нового пользователя
-            await Shell.Current.GoToAsync(nameof(ProfilePage));
+            await Application.Current.MainPage.Navigation.PushAsync(new ProfilePage());
         }
-    
+
     }
 }

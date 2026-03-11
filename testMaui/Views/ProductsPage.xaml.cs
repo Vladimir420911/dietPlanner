@@ -1,9 +1,12 @@
+using testMaui.Models;
+using testMaui.ViewModels;
+
 namespace testMaui.Views;
 
 public partial class ProductsPage : ContentPage
 {
-	public ProductsPage()
-	{
-		InitializeComponent();
-	}
+    public ProductsPage()
+    {
+        InitializeComponent();
+    }
 }

@@ -1,9 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MySql.Data.MySqlClient;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using testMaui.Models;
 using testMaui.Sevices;
-using System.Collections.ObjectModel;
 
 namespace testMaui.ViewModels
 {
@@ -36,23 +37,38 @@ namespace testMaui.ViewModels
         }
 
         [RelayCommand]
-        private void AddProduct()
+        private async Task AddProduct()
         {
-            // Валидация
+            // Валидация с инвариантной культурой
             if (string.IsNullOrWhiteSpace(NewProductName))
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка", "Введите название продукта", "OK");
                 return;
+            }
 
-            if (!double.TryParse(NewProductCalories, out double cal) || cal < 0)
+            if (!double.TryParse(NewProductCalories, NumberStyles.Any, CultureInfo.InvariantCulture, out double cal) || cal < 0)
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка", "Некорректная калорийность", "OK");
                 return;
+            }
 
-            if (!double.TryParse(NewProductProteins, out double prot) || prot < 0)
+            if (!double.TryParse(NewProductProteins, NumberStyles.Any, CultureInfo.InvariantCulture, out double prot) || prot < 0)
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка", "Некорректное значение белков", "OK");
                 return;
+            }
 
-            if (!double.TryParse(NewProductFats, out double fat) || fat < 0)
+            if (!double.TryParse(NewProductFats, NumberStyles.Any, CultureInfo.InvariantCulture, out double fat) || fat < 0)
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка", "Некорректное значение жиров", "OK");
                 return;
+            }
 
-            if (!double.TryParse(NewProductCarbs, out double carb) || carb < 0)
+            if (!double.TryParse(NewProductCarbs, NumberStyles.Any, CultureInfo.InvariantCulture, out double carb) || carb < 0)
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка", "Некорректное значение углеводов", "OK");
                 return;
+            }
 
             var product = new Product
             {
@@ -78,53 +94,130 @@ namespace testMaui.ViewModels
             }
             catch (Exception ex)
             {
-                // Здесь можно добавить отображение ошибки пользователю
-                System.Diagnostics.Debug.WriteLine($"Ошибка добавления продукта: {ex.Message}");
+                await Application.Current.MainPage.DisplayAlert("Ошибка", $"Не удалось добавить продукт: {ex.Message}", "OK");
             }
         }
 
         [RelayCommand]
-        private void UpdateProduct()
+        private void SelectProduct(Product product)
+        {
+            if (SelectedProduct == product)
+                SelectedProduct = null;
+            else
+                SelectedProduct = product;
+        }
+
+        partial void OnSelectedProductChanged(Product value)
+        {
+            if (value != null)
+            {
+                NewProductName = value.Name;
+                NewProductCalories = value.Calories.ToString(CultureInfo.InvariantCulture);
+                NewProductProteins = value.Proteins.ToString(CultureInfo.InvariantCulture);
+                NewProductFats = value.Fats.ToString(CultureInfo.InvariantCulture);
+                NewProductCarbs = value.Carbs.ToString(CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                NewProductName = string.Empty;
+                NewProductCalories = string.Empty;
+                NewProductProteins = string.Empty;
+                NewProductFats = string.Empty;
+                NewProductCarbs = string.Empty;
+            }
+        }
+
+        [RelayCommand]
+        private async Task UpdateProduct()
         {
             if (SelectedProduct == null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка", "Выберите продукт для обновления", "OK");
                 return;
+            }
+
+            // Валидация с инвариантной культурой
+            if (string.IsNullOrWhiteSpace(NewProductName))
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка", "Введите название продукта", "OK");
+                return;
+            }
+
+            if (!double.TryParse(NewProductCalories, NumberStyles.Any, CultureInfo.InvariantCulture, out double cal) || cal < 0)
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка", "Некорректная калорийность", "OK");
+                return;
+            }
+
+            if (!double.TryParse(NewProductProteins, NumberStyles.Any, CultureInfo.InvariantCulture, out double prot) || prot < 0)
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка", "Некорректное значение белков", "OK");
+                return;
+            }
+
+            if (!double.TryParse(NewProductFats, NumberStyles.Any, CultureInfo.InvariantCulture, out double fat) || fat < 0)
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка", "Некорректное значение жиров", "OK");
+                return;
+            }
+
+            if (!double.TryParse(NewProductCarbs, NumberStyles.Any, CultureInfo.InvariantCulture, out double carb) || carb < 0)
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка", "Некорректное значение углеводов", "OK");
+                return;
+            }
+
+            // Обновляем выбранный продукт
+            SelectedProduct.Name = NewProductName;
+            SelectedProduct.Calories = cal;
+            SelectedProduct.Proteins = prot;
+            SelectedProduct.Fats = fat;
+            SelectedProduct.Carbs = carb;
 
             try
             {
                 Database.UpdateProduct(SelectedProduct);
-                // Обновляем элемент в коллекции (если нужно, но он уже обновлён)
+
+                // Обновляем элемент в коллекции
                 var index = Products.IndexOf(SelectedProduct);
                 if (index >= 0)
                 {
                     Products[index] = SelectedProduct;
                 }
+
+                // Сбрасываем выделение
+                SelectedProduct = null;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка обновления продукта: {ex.Message}");
+                await Application.Current.MainPage.DisplayAlert("Ошибка", $"Не удалось обновить продукт: {ex.Message}", "OK");
             }
         }
 
         [RelayCommand]
-        private void DeleteProduct()
+        private async Task DeleteProduct()
         {
             if (SelectedProduct == null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка", "Выберите продукт для удаления", "OK");
                 return;
+            }
+
+            bool confirm = await Application.Current.MainPage.DisplayAlert(
+                "Подтверждение",
+                $"Удалить продукт '{SelectedProduct.Name}'? Все связанные записи в дневнике также будут удалены.",
+                "Да", "Нет");
+            if (!confirm) return;
 
             try
             {
                 Database.DeleteProduct(SelectedProduct.Id);
                 Products.Remove(SelectedProduct);
-            }
-            catch (MySqlException ex) when (ex.Number == 1451) // FOREIGN KEY constraint fails
-            {
-                // Продукт используется в приёмах пищи — нельзя удалить
-                // Здесь можно показать предупреждение пользователю
-                System.Diagnostics.Debug.WriteLine("Продукт нельзя удалить, так как он используется в дневнике.");
+                SelectedProduct = null;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка удаления продукта: {ex.Message}");
+                await Application.Current.MainPage.DisplayAlert("Ошибка", $"Не удалось удалить продукт: {ex.Message}", "OK");
             }
         }
     }

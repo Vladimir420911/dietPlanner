@@ -12,6 +12,8 @@ public partial class DiaryPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        (BindingContext as DiaryViewModel)?.LoadAllMeals();
+        var vm = BindingContext as DiaryViewModel;
+        vm?.LoadAllMeals();   // загружает приёмы пищи за день
+        vm?.LoadProducts();   // обновляет список продуктов
     }
 }

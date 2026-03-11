@@ -67,7 +67,7 @@ namespace testMaui.ViewModels
             FilterCurrentItems();
         }
 
-        private void LoadProducts()
+        public void LoadProducts()
         {
             var prods = Database.GetAllProducts();
             Products.Clear();

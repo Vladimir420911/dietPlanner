@@ -82,6 +82,15 @@ namespace testMaui.ViewModels
             DailyNormProteins = user.DailyProteinNorm;
             DailyNormFats = user.DailyFatNorm;
             DailyNormCarbs = user.DailyCarbNorm;
+            // Уведомляем об изменениях вычисляемых свойств
+            OnPropertyChanged(nameof(RemainingCalories));
+            OnPropertyChanged(nameof(RemainingProteins));
+            OnPropertyChanged(nameof(RemainingFats));
+            OnPropertyChanged(nameof(RemainingCarbs));
+            OnPropertyChanged(nameof(CaloriesProgress));
+            OnPropertyChanged(nameof(ProteinsProgress));
+            OnPropertyChanged(nameof(FatsProgress));
+            OnPropertyChanged(nameof(CarbsProgress));
         }
 
         public void LoadAllMeals()

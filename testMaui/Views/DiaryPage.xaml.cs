@@ -13,7 +13,8 @@ public partial class DiaryPage : ContentPage
     {
         base.OnAppearing();
         var vm = BindingContext as DiaryViewModel;
-        vm?.LoadAllMeals();   // загружает приёмы пищи за день
-        vm?.LoadProducts();   // обновляет список продуктов
+        vm?.LoadAllMeals();   // загрузить приёмы пищи
+        vm?.LoadProducts();   // обновить список продуктов
+        vm?.LoadNorms();      // обновить нормы из профиля
     }
 }

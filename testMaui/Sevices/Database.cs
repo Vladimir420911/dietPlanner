@@ -6,7 +6,7 @@ namespace testMaui.Sevices
     public class Database
     {
         private static readonly string connectionString =
-            "server=localhost;database=diet_planner;user=root;password=123456;port=3307;";
+            "server=localhost;database=diet_planner;user=root;password=vertrigo;port=3306;";
 
         // ========== Продукты ==========
         public static List<Product> GetAllProducts()
@@ -229,7 +229,7 @@ namespace testMaui.Sevices
             conn.Open();
 
             var cmdUser = new MySqlCommand(
-                "SELECT id, name, age, gender, weight, height, activity_level, goal FROM users WHERE id=@id",
+                "SELECT id, name, age, gender, weight, height, activity_level, goal, password FROM users WHERE id=@id",
                 conn);
             cmdUser.Parameters.AddWithValue("@id", userId);
             using var reader = cmdUser.ExecuteReader();
@@ -244,7 +244,8 @@ namespace testMaui.Sevices
                 Weight = reader.GetDouble("weight"),
                 Height = reader.GetDouble("height"),
                 ActivityFactor = reader.GetDouble("activity_level"),
-                Goal = Enum.Parse<GoalType>(reader.GetString("goal"))
+                Goal = Enum.Parse<GoalType>(reader.GetString("goal")),
+                Password = reader.GetString("password")
             };
             reader.Close();
 
@@ -294,6 +295,7 @@ namespace testMaui.Sevices
             cmd.Parameters.AddWithValue("@height", user.Height);
             cmd.Parameters.AddWithValue("@activity", user.ActivityFactor);
             cmd.Parameters.AddWithValue("@goal", user.Goal.ToString());
+
             user.Id = Convert.ToInt32(cmd.ExecuteScalar());
 
             RecalculateUserNorm(user);
@@ -308,7 +310,7 @@ namespace testMaui.Sevices
             var cmd = new MySqlCommand(@"
                 UPDATE users SET
                     name=@name, age=@age, gender=@gender, weight=@weight,
-                    height=@height, activity_level=@activity, goal=@goal
+                    height=@height, activity_level=@activity, goal=@goal, password=@password
                 WHERE id=@id", conn);
             cmd.Parameters.AddWithValue("@id", user.Id);
             cmd.Parameters.AddWithValue("@name", user.Name);
@@ -318,6 +320,8 @@ namespace testMaui.Sevices
             cmd.Parameters.AddWithValue("@height", user.Height);
             cmd.Parameters.AddWithValue("@activity", user.ActivityFactor);
             cmd.Parameters.AddWithValue("@goal", user.Goal.ToString());
+            cmd.Parameters.AddWithValue("@password", user.Password);
+
             cmd.ExecuteNonQuery();
 
             RecalculateUserNorm(user); // пересчёт и сохранение норм

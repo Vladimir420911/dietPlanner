@@ -122,7 +122,7 @@ namespace testMaui.ViewModels
                 goalType = GoalType.Maintain;
 
             // Создаём или обновляем объект пользователя
-            var user = IsNewUser ? new UserProfile() : AppState.CurrentUser!;
+            var user = AppState.CurrentUser ?? new UserProfile();
 
             user.Name = UserName;
             user.Age = age;
@@ -131,37 +131,31 @@ namespace testMaui.ViewModels
             user.Height = height;
             user.ActivityLevel = ActivityLevel;
             user.Goal = goalType;
-            if (!string.IsNullOrWhiteSpace(Password)) // если пароль введён, обновляем
+            if (!string.IsNullOrWhiteSpace(Password))
                 user.Password = Password;
 
             try
             {
-                if (IsNewUser)
+                if (AppState.CurrentUser != null)
                 {
-                    // Создание нового пользователя
+                    // Обновление существующего
+                    Database.UpdateUserWithPassword(user);
+                    // Обновляем отображаемые нормы
+                    DailyCalorieNorm = user.DailyCalorieNorm;
+                    DailyProteinNorm = user.DailyProteinNorm;
+                    DailyFatNorm = user.DailyFatNorm;
+                    DailyCarbNorm = user.DailyCarbNorm;
+                    await Application.Current.MainPage.DisplayAlert("Успех", "Профиль обновлён", "OK");
+                }
+                else
+                {
+                    // Создание нового
                     int newId = Database.CreateUser(user, Password);
                     user.Id = newId;
                     Preferences.Set("CurrentUserId", newId);
                     AppState.CurrentUserId = newId;
                     AppState.CurrentUser = user;
-                    // Переходим на главную
                     Application.Current.MainPage = new AppShell();
-                }
-                else
-                {
-                    // Обновление существующего
-                    Database.SaveUserProfile(user); // предполагается, что он обновляет все поля, кроме пароля?
-                                                    // Если SaveUserProfile не обновляет пароль, нужно написать отдельный метод или добавить параметр.
-                                                    // Для простоты предлагаю создать метод UpdateUserWithPassword.
-                                                    // Либо расширить SaveUserProfile.
-                                                    // Ниже пример метода, который обновляет и пароль.
-                    Database.UpdateUserWithPassword(user);
-                    // Обновляем нормы на экране
-                    DailyCalorieNorm = user.DailyCalorieNorm;
-                    DailyProteinNorm = user.DailyProteinNorm;
-                    DailyFatNorm = user.DailyFatNorm;
-                    DailyCarbNorm = user.DailyCarbNorm;
-                    await Application.Current.MainPage.DisplayAlert("Успех", "Профиль сохранён", "OK");
                 }
             }
             catch (Exception ex)

@@ -10,10 +10,8 @@ public class UserProfile
     public double Height { get; set; } = 170;
 
     public string Password { get; set; } = string.Empty;
-    // Числовой коэффициент активности (хранится в БД)
-    public double ActivityFactor { get; set; } = 1.55; // Moderate по умолчанию
+    public double ActivityFactor { get; set; } = 1.55; 
 
-    // Строковое представление для UI (синхронизируется с ActivityFactor)
     public string ActivityLevel
     {
         get => ActivityFactor switch

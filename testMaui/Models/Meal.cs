@@ -6,7 +6,7 @@ namespace testMaui.Models
     {
         public int Id { get; set; }
         public DateTime DateTime { get; set; }
-        public string Type { get; set; } = string.Empty;   // "Завтрак", "Обед", "Ужин", "Перекус"
+        public string Type { get; set; } = string.Empty;
         public List<MealItem> Items { get; set; } = new();
 
         public double TotalCalories => Items.Sum(i => i.Calories);

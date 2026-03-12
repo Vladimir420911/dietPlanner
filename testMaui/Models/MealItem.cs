@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace testMaui.Models
 {
@@ -10,7 +6,7 @@ namespace testMaui.Models
     {
         public int Id { get; set; }
         public Product Product { get; set; } = null!;
-        public double QuantityGrams { get; set; }      // масса в граммах
+        public double QuantityGrams { get; set; }
         public double Calories => Product.Calories * QuantityGrams / 100.0;
         public double Proteins => Product.Proteins * QuantityGrams / 100.0;
         public double Fats => Product.Fats * QuantityGrams / 100.0;

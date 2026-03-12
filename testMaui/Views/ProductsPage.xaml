@@ -53,11 +53,18 @@
             <Frame Padding="15" BackgroundColor="White" CornerRadius="10" HasShadow="True">
                 <VerticalStackLayout Spacing="10">
                     <Entry Placeholder="Название" Text="{Binding NewProductName}" />
-                    <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="5">
-                        <Entry Grid.Column="0" Placeholder="Ккал" Text="{Binding NewProductCalories}" Keyboard="Numeric" />
-                        <Entry Grid.Column="1" Placeholder="Белки" Text="{Binding NewProductProteins}" Keyboard="Numeric" />
-                        <Entry Grid.Column="2" Placeholder="Жиры" Text="{Binding NewProductFats}" Keyboard="Numeric" />
-                        <Entry Grid.Column="3" Placeholder="Углеводы" Text="{Binding NewProductCarbs}" Keyboard="Numeric" />
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*,*,*" ColumnSpacing="5">
+                        <!-- Строка с подписями -->
+                        <Label Text="Ккал" Grid.Row="0" Grid.Column="0" HorizontalOptions="Start" FontSize="14"/>
+                        <Label Text="Белки" Grid.Row="0" Grid.Column="1" HorizontalOptions="Start" FontSize="14"/>
+                        <Label Text="Жиры" Grid.Row="0" Grid.Column="2" HorizontalOptions="Start" FontSize="14"/>
+                        <Label Text="Углеводы" Grid.Row="0" Grid.Column="3" HorizontalOptions="Start" FontSize="14"/>
+
+                        <!-- Строка с полями ввода -->
+                        <Entry Grid.Row="1" Grid.Column="0" Text="{Binding NewProductCalories}" Keyboard="Numeric" />
+                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding NewProductProteins}" Keyboard="Numeric" />
+                        <Entry Grid.Row="1" Grid.Column="2" Text="{Binding NewProductFats}" Keyboard="Numeric" />
+                        <Entry Grid.Row="1" Grid.Column="3" Text="{Binding NewProductCarbs}" Keyboard="Numeric" />
                     </Grid>
                     <HorizontalStackLayout Spacing="10">
                         <Button Text="Добавить"

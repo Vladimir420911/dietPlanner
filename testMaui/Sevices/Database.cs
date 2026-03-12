@@ -6,7 +6,7 @@ namespace testMaui.Sevices
     public class Database
     {
         private static readonly string connectionString =
-            "server=localhost;database=diet_planner;user=root;password=vertrigo;port=3306;";
+            "server=localhost;database=diet_planner;user=root;password=123456;port=3307;";
 
         // ========== Продукты ==========
         public static List<Product> GetAllProducts()

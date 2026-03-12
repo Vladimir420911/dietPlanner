@@ -61,25 +61,38 @@ namespace testMaui.ViewModels
                 // Значения по умолчанию для нового пользователя
                 UserName = "Новый пользователь";
                 Age = "30";
-                Gender = "Male";
+                Gender = "Мужской";
                 Weight = "70";
                 Height = "170";
-                ActivityLevel = "Moderate";
-                Goal = "Maintain";
+                ActivityLevel = "Средняя";
+                Goal = "Поддержание";
                 Password = string.Empty;
                 // Нормы пока не отображаем
                 return;
             }
 
-            // Заполняем данными существующего пользователя
+            // Заполнение существующего пользователя (преобразование в русские)
             UserName = user.Name;
             Age = user.Age.ToString();
-            Gender = user.Gender;
+            Gender = user.Gender == "Male" ? "Мужской" : "Женский";
             Weight = user.Weight.ToString();
             Height = user.Height.ToString();
-            ActivityLevel = user.ActivityLevel;
-            Goal = user.Goal.ToString();
-            Password = user.Password; // может быть пустым, если раньше не хранили
+            // ActivityLevel — вычисляем по ActivityFactor
+            ActivityLevel = user.ActivityFactor switch
+            {
+                1.2 => "Низкая",
+                1.55 => "Средняя",
+                1.725 => "Высокая",
+                _ => "Средняя"
+            };
+            Goal = user.Goal switch
+            {
+                GoalType.Lose => "Похудение",
+                GoalType.Maintain => "Поддержание",
+                GoalType.Gain => "Набор массы",
+                _ => "Поддержание"
+            };
+            Password = user.Password;
 
             DailyCalorieNorm = user.DailyCalorieNorm;
             DailyProteinNorm = user.DailyProteinNorm;
@@ -119,16 +132,33 @@ namespace testMaui.ViewModels
             if (!Enum.TryParse<GoalType>(Goal, out var goalType))
                 goalType = GoalType.Maintain;
 
-            // Создаём или обновляем объект пользователя
+            // Преобразование русских значений в английские для БД
+            string gender = Gender == "Мужской" ? "Male" : "Female";
+            double activityFactor = ActivityLevel switch
+            {
+                "Низкая" => 1.2,
+                "Средняя" => 1.55,
+                "Высокая" => 1.725,
+                _ => 1.55
+            };
+            GoalType goal = Goal switch
+            {
+                "Похудение" => GoalType.Lose,
+                "Поддержание" => GoalType.Maintain,
+                "Набор массы" => GoalType.Gain,
+                _ => GoalType.Maintain
+            };
+
+            // Создаём или обновляем пользователя
             var user = AppState.CurrentUser ?? new UserProfile();
 
             user.Name = UserName;
             user.Age = age;
-            user.Gender = Gender;
+            user.Gender = gender;
             user.Weight = weight;
             user.Height = height;
-            user.ActivityLevel = ActivityLevel;
-            user.Goal = goalType;
+            user.ActivityFactor = activityFactor; // напрямую задаём коэффициент
+            user.Goal = goal;
             if (!string.IsNullOrWhiteSpace(Password))
                 user.Password = Password;
 
@@ -136,9 +166,8 @@ namespace testMaui.ViewModels
             {
                 if (AppState.CurrentUser != null)
                 {
-                    // Обновление существующего
                     Database.UpdateUserWithPassword(user);
-                    // Обновляем отображаемые нормы
+                    // Обновляем нормы
                     DailyCalorieNorm = user.DailyCalorieNorm;
                     DailyProteinNorm = user.DailyProteinNorm;
                     DailyFatNorm = user.DailyFatNorm;
@@ -147,7 +176,6 @@ namespace testMaui.ViewModels
                 }
                 else
                 {
-                    // Создание нового
                     int newId = Database.CreateUser(user, Password);
                     user.Id = newId;
                     Preferences.Set("CurrentUserId", newId);

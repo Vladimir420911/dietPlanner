@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using testMaui.Models;
 using testMaui.Sevices;
-using System;
 using testMaui.Views;
 
 namespace testMaui.ViewModels
